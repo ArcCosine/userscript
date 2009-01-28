@@ -8,6 +8,7 @@
 (function(){
 
 var rate_change = function(arg){
+    var rate;
     if( location.href.match(/clip.livedoor.com/)){
         rate = rate_parse(document.getElementById('rate').value,arg);
         var el = document.getElementById('rate_img');
