@@ -31,6 +31,61 @@ var $X = function (exp, context) {
   return null;
 }
 
+//refresh 対策
+var overrideListTabsBlitDiv = function()
+{
+    if (window.listTabs)
+    {
+        var oldBlitDiv = window.listTabs.blitDiv;
+
+        window.listTabs.blitDiv = function()
+        {
+            oldBlitDiv.call(window.listTabs);
+            refreshListTabsStyles();
+            showTasksCount();
+            hideLists();
+        }    
+
+        window.listTabs.blitDiv();
+    }
+}
+
+var refreshListTabsStyles = function()
+{
+    var divListTabs = document.getElementById("listtabs");
+
+    divListTabs.firstChild.style.listStyle = "none";
+    divListTabs.firstChild.style.padding = "0px 5px 0px 5px";
+    divListTabs.firstChild.style.whiteSpace = "nowrap";
+}
+
+var hideLists = function()
+{
+    if (window.listTabs)
+    {
+        var listItems = window.listTabs.div.getElementsByTagName("li");
+        
+        for (var i = 0; i < window.listTabs.data.length; ++i)
+        {
+            if (window.listTabs.data[i] && isListHidden(window.listTabs.data[i][1]))
+                listItems[i].style.display = "none";
+        }
+
+    }
+}
+
+
+var overrideTaskCloudUpdate = function()
+{
+    var oldTaskCloudUpdate = window.taskCloud.update;
+
+    window.taskCloud.update = function()
+    {
+        oldTaskCloudUpdate.call(window.taskCloud);
+        window.listTabs.blitDiv();
+    }    
+}
+
 
 //Column
 var createLeftColumn = function()
@@ -69,7 +124,6 @@ var moveListTabs = function()
     listTabs.firstChild.style.listStyle = "none";
     listTabs.firstChild.style.padding = "0px 5px 0px 5px";
     listTabs.firstChild.style.whiteSpace = "nowrap";
-    showTasksCount();
 
     var listTabsContainer = document.getElementById("listtabscontainer");
 
@@ -86,13 +140,28 @@ var showTasksCount = function()
     {
         var tasksCount = 0;
 
-        if (window.format){
-            tasksCount = window.format.getListStatistics(window.listTabs.data[i][1])[5];
-            listItems[i].firstChild.style.color = "black";
-        }
+        if (window.listTabs.data[i][2])
+        {
+            var filter = window.listTabs.data[i][2];
 
-        if (tasksCount > 0){
-            listItems[i].firstChild.innerHTML += " (" + tasksCount + ")";
+            if (filter && filter.indexOf("status:") < 0){
+                filter = "(" + filter + ") and (status:incomplete)";
+            }
+
+            if (window.overviewList && filter){
+                tasksCount = window.overviewList.getFilteredList(filter).length
+            }
+        }
+        else
+        {
+            if (window.format){
+                tasksCount = window.format.getListStatistics(window.listTabs.data[i][1])[5];
+                listItems[i].firstChild.style.color = "black";
+            }
+
+            if (tasksCount > 0){
+                listItems[i].firstChild.innerHTML += " (" + tasksCount + ")";
+            }
         }
     }
 }
@@ -178,5 +247,7 @@ var overrideBodyKeyPressHandler = function()
     }
 }
 
+window.addEventListener('load', overrideListTabsBlitDiv, false);
 window.addEventListener('load', moveTabsToTheLeft, false);
 window.addEventListener('load', overrideBodyKeyPressHandler, false);
+window.addEventListener('load', overrideTaskCloudUpdate, false);
