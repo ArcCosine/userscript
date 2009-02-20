@@ -147,7 +147,7 @@ var handleKeyPressEvent = function(ev)
     return true;
 }
 
-//‚¢‚Â‚à‚Ì
+//ã„ã¤ã‚‚ã®
 var addKeyBind = function( keyChar, func, eve ){
     var t=eve.target;
     var n=t.tagName.toLowerCase();
@@ -157,7 +157,7 @@ var addKeyBind = function( keyChar, func, eve ){
     var pressKey = eve.which;
     keyChar = keyChar.charCodeAt(keyChar);
     if( pressKey == keyChar ){
-        func.apply();//preventDefault‚Íc‚µ‚Ä‚¨‚¢‚½B1/2‚ÅØ‚è‘Ö‚¦‚½‚¢‚©‚ç
+        func.apply();//preventDefaultã¯æ®‹ã—ã¦ãŠã„ãŸã€‚1/2ã§åˆ‡ã‚Šæ›¿ãˆãŸã„ã‹ã‚‰
     }
 }
 
