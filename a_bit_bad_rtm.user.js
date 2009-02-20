@@ -206,19 +206,19 @@ var handleKeyPressEvent = function(ev)
         "K"  : function(){ window.utility.stopEvent(ev); tabs.selectLeft(); }
     };
 
-    var pressKey = ev.which;
-    pressKey = String.fromCharCode(pressKey);
-
-    if( typeof handler[pressKey] == "function" ){
-        var t=ev.target;
-        var n=t.tagName.toLowerCase();
-        if( t.nodeType != 1 || n == "input" || n == "textarea"  ){
-            return true;
-        }
-        handler[pressKey].apply();
-        return false;
+    var t=ev.target;
+    var n=t.tagName.toLowerCase();
+    if( t.nodeType != 1 || n == "input" || n == "textarea" ){
+        return true;
     }
-    return true;
+
+    var pressKey = String.fromCharCode(ev.which);
+    if( typeof handler[pressKey] != "function" ){
+        return true;
+    }
+
+    handler[pressKey].apply();
+    return false;
 }
 
 var rateChage = function(v){
