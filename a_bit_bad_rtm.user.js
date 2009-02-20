@@ -193,41 +193,32 @@ var moveTabsToTheLeft = function()
 //Keyboard
 var handleKeyPressEvent = function(ev)
 {
-    var keyList = "12qweJK";
-
-    var tabs = window.view.getViewTabs();
     
+    var tabs = window.view.getViewTabs();
+
+    var handler = {
+        "1"  : function(){},
+        "2"  : function(){},
+        "q"  : function(){ window.utility.stopEvent(ev); rateChage(1); },
+        "w"  : function(){ window.utility.stopEvent(ev); rateChage(2); },
+        "e"  : function(){ window.utility.stopEvent(ev); rateChage(3); },
+        "J"  : function(){ window.utility.stopEvent(ev); tabs.selectRight(); },
+        "K"  : function(){ window.utility.stopEvent(ev); tabs.selectLeft(); }
+    };
+
     var pressKey = ev.which;
     pressKey = String.fromCharCode(pressKey);
 
-
-    if( keyList.indexOf(pressKey,0) > -1 ){
-        
-        addKeyBind( "1", function(){  }, ev );
-        addKeyBind( "2", function(){  }, ev );
-        addKeyBind( "q", function(){ window.utility.stopEvent(ev); rateChage(1); }, ev );
-        addKeyBind( "w", function(){ window.utility.stopEvent(ev); rateChage(2); }, ev );
-        addKeyBind( "e", function(){ window.utility.stopEvent(ev); rateChage(3); }, ev );
-        addKeyBind( "J", function(){ window.utility.stopEvent(ev); tabs.selectRight(); }, ev );
-        addKeyBind( "K", function(){ window.utility.stopEvent(ev); tabs.selectLeft(); }, ev );
-
+    if( typeof handler[pressKey] == "function" ){
+        var t=ev.target;
+        var n=t.tagName.toLowerCase();
+        if( t.nodeType != 1 || n == "input" || n == "textarea"  ){
+            return true;
+        }
+        handler[pressKey].apply();
         return false;
     }
     return true;
-}
-
-//いつもの
-var addKeyBind = function( keyChar, func, eve ){
-    var t=eve.target;
-    var n=t.tagName.toLowerCase();
-    if( t.nodeType != 1 || n == "input" || n == "textarea"  ){
-        return;
-    }
-    var pressKey = eve.which;
-    keyChar = keyChar.charCodeAt(keyChar);
-    if( pressKey == keyChar ){
-        func.apply();//preventDefaultは残しておいた。1/2で切り替えたいから
-    }
 }
 
 var rateChage = function(v){
