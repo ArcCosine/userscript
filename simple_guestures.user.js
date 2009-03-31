@@ -2,21 +2,24 @@
 // @name      simple_guestures 
 // @namespace http://looxu.blogspot.com/
 // @description opera like mouse guesture for google chrome
-// @author    Arc Cosine
-// @version   1.0
+// @author    Gomita / Arc Cosine 
+// @version   1.1
 // ==/UserScript==
- (function(){
+// This code is inspired by Gomita's Code
+// Look => http://www.xuldev.org/misc/script/MouseGestures.uc.js 
+// license      http://0-oo.net/pryn/MIT_license.txt (The MIT license)
+(function(){
     var simpleMouseGuesture = {
         _lastX: 0,
         _lastY: 0,
         _directionChain : "",
+        _isMousedown : false,
+        _suppressContext : false,
         init : function(){
             window.addEventListener("mousedown", this, false);
             window.addEventListener("mousemove", this, false);
             window.addEventListener("mouseup", this, false);
         },
-        _isMousedown : false,
-        _suppressContext : false,
         handleEvent : function(e){
             switch(e.type){
                 case "mousedown":
@@ -34,7 +37,6 @@
                     if( this._isMousedown ){
                         this._isMousedown = false;
                         this._suppressContext = !this._directionChain;
-                        console.log(this._directionChain.length);
                         if( this._directionChain.length > 0 ){  //if not mouse guesture
                             document.oncontextmenu = function(){ return false; };
                         };
@@ -49,17 +51,16 @@
             this._directionChain = "";
 
             //add canvas
-            this.canvas = document.createElement('canvas');
-            this.canvas.style.position = 'absolute';
-            this.ctx = this.canvas.getContext('2d');
+            this.canvas = document.createElement("canvas");
+            this.canvas.style.position = "absolute";
+            this.ctx = this.canvas.getContext("2d");
             document.documentElement.appendChild(this.canvas);
 
-            this.canvas.style.display = 'block';
-            this.canvas.style.left = 0 + 'px';
-            this.canvas.style.top =  0 + 'px';
+            this.canvas.style.left = 0 + "px";
+            this.canvas.style.top =  0 + "px";
             this.canvas.width = Math.max(document.documentElement.scrollWidth, window.innerWidth);
             this.canvas.height = Math.max(document.documentElement.scrollHeight, window.innerHeight);
-            this.ctx.strokeStyle = 'rgba(0,0,255,1)';
+            this.ctx.strokeStyle = "rgba(18,89,199,1)";     //like delicious link color
             this.startX = e.pageX;
             this.startY = e.pageY;
         },
@@ -103,13 +104,14 @@
             switch(this._directionChain){
                 case "L" : history.back(); break;
                 case "R" : history.forward(); break;
+                case "D" : window.open(); break;
                 case "DR" : this._delTab(); break;
                 case "UD" : location.reload(); break;
             }
         },
         _delTab : function(){
             window.opener = window;
-            var win = window.open(location.href, '_self');
+            var win = window.open(location.href, "_self");
             win.close();
         }
     };
