@@ -21,7 +21,7 @@
       iframe.name = 'mata_nico_miteru';
       iframe.style.display = 'none';
 
-      var url = 'http://twitter.com/statuses/update.xml?status=またニコニコ動画見てる:' + text + location.href;
+      var url = 'http://twitter.com/statuses/update.xml?status=またニコニコ動画見てる:' + text + ' ' + document.title + ' ' + location.href;
 
       var form = document.createElement('form');
       form.action = url;
