@@ -9,6 +9,10 @@
 (function(){
   var MataNico = {
     send : function(){
+      var bg = document.getElementById('mata_nico').style.backgroundColor;
+      if( bg == "#fc9988" ){
+        return;
+      }
       var text = document.getElementById('mata_nico').value;
       text = (text.length>60) ? text.substring(0,60) : text;
       text = (text.length == 0) ? text : '「' + text + '」';
@@ -16,15 +20,13 @@
       var iframe = document.createElement('iframe');
       iframe.name = 'mata_nico_miteru';
       iframe.style.display = 'none';
-      var url = 'http://twitter.com/statuses/update.xml';
+
+      var url = 'http://twitter.com/statuses/update.xml?status=またニコニコ動画見てる:' + text + location.href;
+
       var form = document.createElement('form');
       form.action = url;
       form.target = 'mata_nico_miteru';
       form.method = 'POST';
-      var status_input = document.createElement('input');
-      status_input.value = 'またニコニコ動画見てる:' + text +  location.href;
-      status_input.name = 'status';
-      form.appendChild(status_input);
       form.style.display = 'none';
       document.body.appendChild(form);
 
