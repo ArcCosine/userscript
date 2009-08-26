@@ -3,7 +3,7 @@
 // @namespace http://looxu.blogspot.com/
 // @include   http://www.nicovideo.jp/watch/*
 // @author    Arc Cosine
-// @version   1.7
+// @version   1.8
 // ==/UserScript==
 (function(){
     /** simple version of $X
@@ -73,7 +73,8 @@
         //create parts
         this.pos = $X('//div[@id="des_2"]/p[@class="TXT12"]/a')[0];
         if( typeof this.pos == "undefined" ){
-          this.pos = $X('//div[@id="des_2"]/p[@class="TXT12"]/nobr/a[last()]')[0];
+          //this.pos = $X('//div[@id="des_2"]/p[@class="TXT12"]/nobr/a[last()]')[0];
+          this.pos = $X('//div[@id="des_2"]/table/tbody/tr/td/p[@class="TXT12"]')[0];
         }
         for( var i=0; i<this.options.length; i++ ){
             this.createParts( this.options[i] );
@@ -103,6 +104,7 @@
 
     NDesc.prototype.description_toggle = function(){
         this.toggleObject('//div[@id="des_2"]/div');
+        this.toggleObject('//div[@id="des_2"]/div[last()]');
     }
 
     NDesc.prototype.advert_toggle = function(){
