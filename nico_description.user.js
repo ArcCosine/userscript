@@ -3,7 +3,7 @@
 // @namespace http://looxu.blogspot.com/
 // @include   http://www.nicovideo.jp/watch/*
 // @author    Arc Cosine
-// @version   1.8
+// @version   2.0
 // ==/UserScript==
 (function(){
     /** simple version of $X
