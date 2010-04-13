@@ -159,9 +159,9 @@ var showTasksCount = function()
                 listItems[i].firstChild.style.color = "black";
             }
 
-            if (tasksCount > 0){
-                listItems[i].firstChild.innerHTML += " (" + tasksCount + ")";
-            }
+        }
+        if (tasksCount > 0){
+            listItems[i].firstChild.innerHTML += " (" + tasksCount + ")";
         }
     }
 }
