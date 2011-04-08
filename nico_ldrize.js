@@ -50,6 +50,9 @@
   NicoLDRize.openTab = function(){
     _win.open(NicoLDRize.aTags[NicoLDRize.pos-1].href);
   }
+  NicoLDRize.resize = function(){
+    _doc.getElementById('nicoldrize').style.left = _doc.querySelectorAll('div.content_672 > div')[0].offsetLeft - 40 + 'px';
+  }
   _doc.addEventListener('DOMContentLoaded',function(){
       _win.setTimeout( function(){
       var images = _doc.querySelectorAll("img");
@@ -61,6 +64,7 @@
       }}, 1000 );
     if(location.href.match(/nicovideo.jp\/ranking/)){
       NicoLDRize.init();
+      _win.addEventListener('resize',function(){ NicoLDRize.resize(); }, false );
     }
   },false );
 })(document,window);
