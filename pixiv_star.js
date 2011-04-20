@@ -3,7 +3,7 @@
 // @namespace http://looxu.blogspot.com/
 // @include   http://www.pixiv.net/member_illust*
 // @author    Arc Cosine
-// @version   2.2
+// @version   2.3
 // ==/UserScript==
 // License    Public Domain
 (function(){
@@ -33,6 +33,7 @@
       '40' : 'Down'
     },
     init : function(){
+      if( window.top != window.self ){ return; }
       var handle = (window.opera) ? 'keypress' : 'keydown';
       window.addEventListener( handle, function(e){ PIXIV.addKeyBind(e) },false );
 
@@ -120,7 +121,7 @@
     },
     rateSend : function(){
       var w = (typeof unsafeWindow != 'undefined' ) ? unsafeWindow : window;
-      w.send_rating(PIXIV['my_rate']);  //pixiv api
+      w.countup_rating(PIXIV['my_rate']);  //pixiv api
     },
     bookMark : function(){
       var illust_id= document.getElementById('rpc_i_id').textContent;
@@ -192,17 +193,11 @@
       }
     },
     comicScroll : function(n){
-      var loc = location.href;
-      if( loc.indexOf('mode=manga') > -1 ){
-        var p_num = loc.match(/page(\d+)/);
-        if( !p_num ){
-          location.href = loc+'#page1';
-        }else{
-          var page = parseInt(p_num[1])+n;
-          if( page < 0 ) page = 0;
-          if( !document.getElementById('page'+page) ){ page -= 1; }
-          location.href = loc.replace(/#page\d+/,'') + '#page'+page;
-        }
+      var w = (typeof unsafeWindow != 'undefined' ) ? unsafeWindow : window;
+      if( n > 0 ){
+        w.pixiv.manga.next()
+      }else{
+        w.pixiv.manga.prev()
       }
     },
     modeChange : function(){
@@ -212,6 +207,10 @@
   };
 
 
-  document.addEventListener('DOMContentLoaded',function(){ PIXIV.init(); },false );
+  if( window.opera ){
+    document.addEventListener('DOMContentLoaded',function(){ PIXIV.init(); },false );
+  }else{
+    PIXIV.init(); //for greasemonkey
+  }
 
 })();
