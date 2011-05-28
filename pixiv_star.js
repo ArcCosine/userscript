@@ -3,7 +3,7 @@
 // @namespace http://looxu.blogspot.com/
 // @include   http://www.pixiv.net/member_illust*
 // @author    Arc Cosine
-// @version   2.3
+// @version   2.4
 // ==/UserScript==
 // License    Public Domain
 (function(){
@@ -17,6 +17,7 @@
       'Left' : function(){ PIXIV.rateChange(-1); },
       'Right' : function(){ PIXIV.rateChange(1); },
       'm' : function(){ PIXIV.rateSend(); },
+      'n' : function(){ PIXIV.rateChange(1); PIXIV.rateSend(); },
       'b' : function(){ PIXIV.bookMark(); },
       'q' : function(){ PIXIV.moveLink(0); },
       'w' : function(){ PIXIV.moveLink(1); },
@@ -48,15 +49,15 @@
 
       document.body.appendChild(modeBox);
 
-      var searchClass = document.querySelectorAll('.ahref_type05');
+      var searchClass = document.querySelectorAll('.bookmark .ui-button');
       if( searchClass.length > 0 ){
         searchClass[0].style.cssFloat = 'left';
         var tarBtn = searchClass[0].parentNode;
         if( tarBtn ){
-          var registLink = document.createElement('span');
+          var registLink = document.createElement('a');
           registLink.addEventListener('click', function(){ PIXIV.bookMark(); }, false );
-          registLink.innerHTML = '<a href="#">一発ブクマ</a>';
-          registLink.className = 'ahref_type05';
+          registLink.innerHTML = '一発ブクマ';
+          registLink.className = 'ui-button';
           registLink.style.cssFloat= 'right';
           registLink.style.marginLeft= '10px';
           tarBtn.appendChild(registLink);
@@ -94,7 +95,7 @@
       var pressKey = (eve.which || eve.keyCode);
       var keyChar = (eve.ctrlKey?'C-':'') + (eve.altKey?'A-':'') + (eve.shiftKey?'S-':'') + ((typeof PIXIV.specialKey[pressKey] == 'undefined' )?String.fromCharCode(pressKey).toLowerCase():PIXIV.specialKey[pressKey]);
       if( typeof PIXIV.handler[keyChar] == 'function' ){
-        if( /(j|k|Down|Up)/.test(keyChar) && !PIXIV.mode ) return;
+        if( /(Down|Up)/.test(keyChar) && !PIXIV.mode ) return;
         eve.preventDefault();    //Stop Default Event
         PIXIV.handler[keyChar].apply();
       }
