@@ -87,7 +87,7 @@
             },false );
             input_work.addEventListener('keypress', NDesc.key_event, false );
 
-            var video_title = document.querySelector('.video_title');
+            var video_title = document.querySelector('#video_title');
             video_title.parentNode.insertBefore( input_work, video_title.nextSibling );
             NDesc.input = input_work;
         },
