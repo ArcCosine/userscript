@@ -3,7 +3,7 @@
 // @namespace http://looxu.blogspot.com/
 // @include   http://www.pixiv.net/member_illust*
 // @author    Arc Cosine
-// @version   2.4
+// @version   2.5
 // ==/UserScript==
 // License    Public Domain
 (function(){
@@ -22,9 +22,6 @@
       'q' : function(){ PIXIV.moveLink(0); },
       'w' : function(){ PIXIV.moveLink(1); },
       'o' : function(){ PIXIV.addWatch(); },
-      'Down' : function(){ PIXIV.comicScroll(1); },
-      'Up' : function(){ PIXIV.comicScroll(-1); },
-      'i' : function(){ PIXIV.modeChange(); }
     },
     specialKey : {
       '13' : 'Ent',
@@ -38,17 +35,6 @@
       var handle = (window.opera) ? 'keypress' : 'keydown';
       window.addEventListener( handle, function(e){ PIXIV.addKeyBind(e) },false );
 
-      var modeBox = document.createElement('div');
-      modeBox.id = 'modeBox';
-      modeBox.style.position = 'fixed';
-      modeBox.style.height = '32px';
-      modeBox.style.width= '32px';
-      modeBox.style.top = '8px';
-      modeBox.style.right = '16px';
-      modeBox.style.background = '#880000';
-
-      document.body.appendChild(modeBox);
-
       var searchClass = document.querySelectorAll('.bookmark .ui-button');
       if( searchClass.length > 0 ){
         searchClass[0].style.cssFloat = 'left';
@@ -58,8 +44,7 @@
           registLink.addEventListener('click', function(){ PIXIV.bookMark(); }, false );
           registLink.innerHTML = '一発ブクマ';
           registLink.className = 'ui-button';
-          registLink.style.cssFloat= 'right';
-          registLink.style.marginLeft= '10px';
+		  registLink.style.cssText = 'float:right; margin-left: 10px;'
           tarBtn.appendChild(registLink);
         }
       }
@@ -72,19 +57,17 @@
           var registLink = profRegistLi.appendChild(document.createElement('span'));
           registLink.addEventListener('click', function(){ PIXIV.addWatch(); }, false );
           registLink.innerHTML = 'お気に入りに一発追加';
-          registLink.style.padding = '6px 0px 0px 0px';
-          registLink.style.width = '190px';
-          registLink.style.height = '23px';
-          registLink.style.display = 'block';
-          registLink.style.cursor = 'pointer';
-          registLink.style.color = '#007ff8';
-
+		  registLink.style.cssText = 'padding: 6px 0px 0px 0px;\
+		  						width: 190px;\
+								height: 23px;\
+								display: block;\
+								cursor:pointer;\
+								color:#007ff9;';
           searchClass[0].appendChild( profRegistLi );
         }
 
       }
 
-      if( location.href.indexOf('mode=manga') > -1 ){  PIXIV.modeChange(); }
     },
     addKeyBind : function( eve ){
       var t=eve.target;
@@ -111,12 +94,9 @@
       for( var i=1; i<11; i++ ){  //It's bad roop code ...;-)
         var rate_star = document.getElementsByClassName('r'+i+'-unit')[0];
         if( i <= PIXIV['my_rate'] ){
-          rate_star.style.background = "url('http://source.pixiv.net/source/images/rating.png') left center";
-          rate_star.style.zIndex = 2;
-          rate_star.style.width = (PIXIV['hover_size']) + 'px'
+		  rate_star.style.cssText = 'background:url(http://source.pixiv.net/source/images/rating.png) left center;z-index: 2; width:' +  (PIXIV['hover_size']) + 'px;';
         }else{
-          rate_star.style.background = "url('http://source.pixiv.net/source/images/rating.png') left top";
-          rate_star.style.zIndex = 1;
+		  rate_star.style.cssText = 'background:url(http://source.pixiv.net/source/images/rating.png) left top; z-index: 1;';
         }
       }
     },
@@ -141,22 +121,25 @@
       }
 
       var loadingDiv = document.createElement('div');
-      loadingDiv.style.position = 'fixed';
-      loadingDiv.style.width = '640px';
-      loadingDiv.style.height = '480px';
-      loadingDiv.style.margin = '-320px 0px 0px -240px';
-      loadingDiv.style.opacity = '0.5';
-      loadingDiv.style.fontSize = '48px';
-      loadingDiv.style.textAlign = 'center';
-      loadingDiv.style.background = '#000000';
-      loadingDiv.style.color = '#ffffff';
-      loadingDiv.style.borderRadius = '1em';
-      loadingDiv.style.MozBorderRadius = '1em';
-      loadingDiv.style.top = '50%';
-      loadingDiv.style.left= '50%';
-      loadingDiv.style.lineHeight = '480px';
       loadingDiv.innerHTML ='ブックマークに追加中……';
-      loadingDiv.style.zIndex = '999';
+	  loadingDiv.style.cssText = '\
+		position: fixed;\
+		width: 640px;\
+	  	height: 480px;\
+		margin: -320px 0px 0px -240px;\
+		opacity: 0.5;\
+		font-size: 48px;\
+		text-align: center;\
+		background: #000;\
+		color:#fff;\
+		border-radius: 1em;\
+		moz-border-radius: 1em;\
+		top: 50%;\
+		left: 50%;\
+		line-height: 480px;\
+		z-index: 999;\
+		';
+
 
       document.body.appendChild(loadingDiv);
 
@@ -192,18 +175,6 @@
           location.href = navLink[0];
         }
       }
-    },
-    comicScroll : function(n){
-      var w = (typeof unsafeWindow != 'undefined' ) ? unsafeWindow : window;
-      if( n > 0 ){
-        w.pixiv.manga.next()
-      }else{
-        w.pixiv.manga.prev()
-      }
-    },
-    modeChange : function(){
-      PIXIV.mode = !PIXIV.mode;
-      document.getElementById('modeBox').style.background = (PIXIV.mode)?'#008800':'#880000';
     }
   };
 
