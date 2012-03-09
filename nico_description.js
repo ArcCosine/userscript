@@ -66,6 +66,7 @@
         description_toggle : function() {
             NDesc.toggleObject('div.info_frm');
             NDesc.toggleObject('#itab');
+            NDesc.toggleObject('#mylistlinklist');
         },
         ad_toggle : function() {
             NDesc.toggleObject('#WATCHFOOTER');
