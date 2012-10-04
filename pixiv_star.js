@@ -17,7 +17,7 @@
       'Left' : function(){ PIXIV.rateChange(-1); },
       'Right' : function(){ PIXIV.rateChange(1); },
       'm' : function(){ PIXIV.rateSend(); },
-      'n' : function(){ PIXIV.rateChange(1); PIXIV.rateSend(); },
+      'n' : function(){ PIXIV.rateChange(10); PIXIV.rateSend(); },
       'b' : function(){ PIXIV.bookMark(); },
       'q' : function(){ PIXIV.moveLink(0); },
       'w' : function(){ PIXIV.moveLink(1); },
@@ -87,22 +87,20 @@
       PIXIV['my_rate'] += num;
       if( PIXIV['my_rate'] < 0  ) { PIXIV['my_rate'] =  0 };
       if( PIXIV['my_rate'] > 10 ) { PIXIV['my_rate'] = 10 };
-      var chk = document.getElementsByClassName('r1-unit')[0];
-      if( chk.tagName.toLowerCase() == 'li' ){
+      var chk = document.getElementsByClassName('rate')[0];
+      if( chk.tagName.toLowerCase() != 'div' ){
         return;
       }
-      for( var i=1; i<11; i++ ){  //It's bad roop code ...;-)
-        var rate_star = document.getElementsByClassName('r'+i+'-unit')[0];
-        if( i <= PIXIV['my_rate'] ){
-		  rate_star.style.cssText = 'background:url(http://source.pixiv.net/source/images/rating.png) left center;z-index: 2; width:' +  (PIXIV['hover_size']) + 'px;';
-        }else{
-		  rate_star.style.cssText = 'background:url(http://source.pixiv.net/source/images/rating.png) left top; z-index: 1;';
-        }
-      }
+      var w = (typeof unsafeWindow != 'undefined' ) ? unsafeWindow : window;
+	  var p = w.$(chk).offset();
+  	  w.pixiv.rating.update( p.left+(26*PIXIV.my_rate)-26, p.top+(26*PIXIV.my_rate) );
     },
     rateSend : function(){
+      var chk = document.getElementsByClassName('rate')[0];
+	  chk.parentNode.className = 'rating rate-' + PIXIV.my_rate + ' rated';
+
       var w = (typeof unsafeWindow != 'undefined' ) ? unsafeWindow : window;
-      w.countup_rating(PIXIV['my_rate']);  //pixiv api
+	  w.pixiv.api.rating(PIXIV.my_rate);
     },
     bookMark : function(){
       var illust_id= document.getElementById('rpc_i_id').textContent;
