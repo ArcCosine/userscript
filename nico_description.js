@@ -3,178 +3,126 @@
 // @namespace http://looxu.blogspot.com/
 // @include   http://www.nicovideo.jp/watch/*
 // @author    Arc Cosine
-// @version   3.0
+// @version   5.0
 // ==/UserScript==
-(function(){
+(function(_doc){
 
-    var NDesc = {
-      com_style : {
-        'color' : '#1259C7',
-        'text-decoration' : 'underline',
-        'padding-left' : '5px',
-        'cursor' : 'pointer'
-      },
-      options : [
-        { 'text' : 'Bridge', 'func' : function(){ NDesc.move_bridge(); } },
-        { 'text' : '広告表示',  'func' : function(){ NDesc.ad_toggle(); } },
-        { 'text' : 'Video詳細', 'func' : function(){ NDesc.description_toggle(); } }
-      ],
-      init : function(){
-          //add Input Box
-          NDesc.createInput();
+	var NDesc = {
+		init : function(){
 
-          //hide parts
-          NDesc.description_toggle();
-          NDesc.ad_toggle();
+			if( window.parent != window ){ 
+				return;
+			}
+			//set global
+			NDesc.flvplayer = _doc.getElementById('external_nicoplayer');
 
-          //add focus key event
-          document.addEventListener( 'keydown', function(e){
-            if( e.target.tagName != 'INPUT' && e.keyCode == 32 ){
-              NDesc.use_hotkey();
-              e.preventDefault();
-            }
-          },false );
+			//add Input Box
+			NDesc.createInput();
 
+			//add focus key event
+			_doc.addEventListener( 'keydown', NDesc.bindHotkey, false );
 
-          for( var i=NDesc.options.length; i-- > 0; ){
-            NDesc.createParts(NDesc.options[i]);
-          }
-        },
-        createParts : function( data ) {
-          var insert_node1 = document.querySelector('div.des_1 p.font12');
-          var insert_node2 = document.querySelector('div.des_2 p.font12');
-          var node = document.createElement('span');
-          node.appendChild(document.createTextNode(data.text));
-          for( var option in NDesc.com_style ){
-            var st_op = option.replace(/-([a-z])/,function(m){ return m[1].toUpperCase();});
-            node.style[st_op] = NDesc.com_style[option];
-          }
-          node.addEventListener( 'click', function(){ data['func'].apply(); } ,false );
-          var node2 = node.cloneNode(true);
-          node2.addEventListener( 'click', function(){ data['func'].apply(); } ,false );
-          insert_node1.appendChild(node);
-          insert_node2.appendChild(node2);
-        },
+		},
+		bindHotkey: function(eve){
+			if( eve.target.tagName !==    'INPUT' && eve.keyCode === 32 ){
+				NDesc.use_hotkey();
+				eve.preventDefault();
+			}
+		},
+		createInput : function(){
 
-        toggleObject : function( selector ){
-            var target = document.querySelector(selector);
-            if( target ){
-              target.style.display = (target.style.display == 'none' ) ? '' : 'none';
-            }
-        },
+			var iw = _doc.createElement('input'),
+				vt = _doc.querySelector('#videoHeaderDetail h2 span.arrow'),
+				is = iw.style;
 
-        description_toggle : function() {
-            NDesc.toggleObject('div.info_frm');
-            NDesc.toggleObject('#itab');
-            NDesc.toggleObject('#mylistlinklist');
-        },
-        ad_toggle : function() {
-            NDesc.toggleObject('#WATCHFOOTER');
-            NDesc.toggleObject('#PAGEFOOTER');
-        },
-        createInput : function(){
-            if( window.parent != window ) return;
-            var input_work = document.createElement('input');
-            input_work.readOnly = true;
-            input_work.autocomplete = 'off';
-            input_work.style.margin = '0px 0px 5px 10px';
-            input_work.addEventListener('focus', function(){
-              input_work.style.backgroundColor = '#fcc';
-              input_work.value = 'Hotkey available';
-            },false );
-            input_work.addEventListener('blur',function(){
-              input_work.style.backgroundColor = '#9D9';
-              input_work.value = 'Hotkey unavailable';
-            },false );
-            input_work.addEventListener('keypress', NDesc.key_event, false );
+			iw.readOnly = true;
+			iw.autocomplete = 'off';
+			is.width = '20px';
+			is.margin = '0px';
+			is.fontSize = '10px';
+			iw.addEventListener('focus', NDesc.available ,false );
+			iw.addEventListener('blur', NDesc.unavailable, false );
+			iw.addEventListener('keypress', NDesc.key_event, false );
 
-            var video_title = document.querySelector('#video_title');
-            video_title.parentNode.insertBefore( input_work, video_title.nextSibling );
-            NDesc.input = input_work;
-        },
+			vt.parentNode.insertBefore( iw, vt.nextSibling );
+			NDesc.input = iw;
+		},
+		available: function(){
+			NDesc.input.style.backgroundColor = '#fcc';
+			NDesc.input.value  = '有効';
+		},
+		unavailable: function(){
+			NDesc.input.style.backgroundColor = '#9d9';
+			NDesc.input.value  = '無効';
+		},
+		use_hotkey : function(){
+			NDesc.input.focus();
+		},
+		play_pause : function(){
+			if( !NDesc.flvplayer ) return;
+			if( NDesc.flvplayer.ext_getStatus() == 'playing' ){
+				NDesc.flvplayer.ext_play(0);
+			}else{
+				NDesc.flvplayer.ext_play(1);
+			}
+		},
 
-        use_hotkey : function(){
-          NDesc.input.focus();
-        },
+		volumeup : function(){
+			NDesc.volume(5);
+		},
+		volumedown : function(){
+			NDesc.volume(-5);
+		},
+		seekleft : function(){
+			NDesc.seek(-10);
+		},
+		seekright : function(){
+			NDesc.seek(10);
+		},
+		seek2top : function(){
+			NDesc.seek(Number.NEGATIVE_INFINITY);
+		},
+		volume : function(vol){
+			if (!NDesc.flvplayer) return;
+			var cur = Number(NDesc.flvplayer.ext_getVolume());
+			var to = cur + Number(vol);
+			if (to > 100) to = 100;
+			if (to < 0  ) to = 0;
+			NDesc.flvplayer.ext_setVolume(to);
+		},
+		seek : function(time) {
+			if (!NDesc.flvplayer) return;
+			var len = Number(NDesc.flvplayer.ext_getTotalTime()),
+				cur = Number(NDesc.flvplayer.ext_getPlayheadTime());
+			var to = cur + Number(time);
+			if (to > len) to = len;
+			if (to < 0  ) to = 0;
+			NDesc.flvplayer.ext_setPlayheadTime(to);
+			// for shotage of backward seek.
+			cur = Number(NDesc.flvplayer.ext_getPlayheadTime());
+			if (time < 0 && cur - to > 5 && to > 10) {
+				NDesc.flvplayer.ext_setPlayheadTime(to - 10);
+			}
+		},
+		key_event : function(eve) {
+			var handler = {
+					' ' : function(){ NDesc.play_pause();  },
+					'k' : function(){ NDesc.volumeup(); },
+					'j' : function(){ NDesc.volumedown(); },
+					'h' : function(){ NDesc.seekleft(); },
+					'l' : function(){ NDesc.seekright(); },
+					'H' : function(){ NDesc.seek2top(); }   //Shift+H
+				},
+				t = eve.target,
+				pressKey = String.fromCharCode(eve.which);
 
-        play_pause : function(){
-          var flvplayer = document.getElementById('flvplayer');
-          if( !flvplayer ) return;
-          if( flvplayer.ext_getStatus() == 'playing' ){
-            flvplayer.ext_play(0);
-          }else{
-            flvplayer.ext_play(1);
-          }
-        },
+			if( t.nodeType === 1 && typeof handler[pressKey] === "function" ){
+				eve.preventDefault();
+				handler[pressKey].apply();
+			}
+		}
+	};
 
-        volumeup : function(){
-          NDesc.volume(5);
-        },
-        volumedown : function(){
-          NDesc.volume(-5);
-        },
-        seekleft : function(){
-          NDesc.seek(-10);
-        },
-        seekright : function(){
-          NDesc.seek(10);
-        },
-        seek2top : function(){
-          NDesc.seek(Number.NEGATIVE_INFINITY);
-        },
-        volume : function(vol){
-          var flvplayer = document.getElementById('flvplayer');
-          if (!flvplayer) return;
-          var cur = Number(flvplayer.ext_getVolume());
-          var to = cur + Number(vol);
-          if (to > 100) to = 100;
-          if (to < 0  ) to = 0;
-          flvplayer.ext_setVolume(to);
-        },
-        seek : function(time) {
-          var flvplayer = document.getElementById('flvplayer');
-          if (!flvplayer) return;
-          var len = Number(flvplayer.ext_getTotalTime());
-          var cur = Number(flvplayer.ext_getPlayheadTime());
-          var to = cur + Number(time);
-          if (to > len) to = len;
-          if (to < 0  ) to = 0;
-          flvplayer.ext_setPlayheadTime(to);
-          // for shotage of backward seek.
-          var cur = Number(flvplayer.ext_getPlayheadTime());
-          if (time < 0 && cur - to > 5 && to > 10) {
-              flvplayer.ext_setPlayheadTime(to - 10);
-          }
-        },
-        key_event : function(e) {
-          var handler = {
-            'o' : function(){ NDesc.description_toggle(); },
-            'a' : function(){ NDesc.ad_toggle(); },
-            'b' : function(){ NDesc.move_bridge();  },
-            ' ' : function(){ NDesc.play_pause();  },
-            'k' : function(){ NDesc.volumeup(); },
-            'j' : function(){ NDesc.volumedown(); },
-            'h' : function(){ NDesc.seekleft(); },
-            'l' : function(){ NDesc.seekright(); },
-            'H' : function(){ NDesc.seek2top(); }   //Shift+H
-          };
-          var t = e.target;
-          var pressKey = String.fromCharCode(e.which);
-          if( t.nodeType == 1 && typeof handler[pressKey] == "function" ){
-            e.preventDefault();
-            handler[pressKey].apply();
-          }
-        },
-      move_bridge : function(){
-        var m = location.href.match(/watch\/(\w+)/);
-        if( m ){
-          location.href = 'http://g2labo.orz.hm/bridge/watch/' + m[1];
-        }
-      }
-   };
+	_doc.addEventListener('DOMContentLoaded', function(){ NDesc.init(); },false );
 
-    document.addEventListener('DOMContentLoaded', function(){
-     NDesc.init();
-    },false );
-
-})();
+})(document);
