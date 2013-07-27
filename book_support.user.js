@@ -3,7 +3,7 @@
 // @namespace http://looxu.blogspot.com/
 // @include http://www.amazon.co.jp/*
 // @author  Arc Cosine
-// @version 1.4
+// @version 1.5
 // @LICENSE Public Domain
 // ==/UserScript==
 (function(){
@@ -82,4 +82,6 @@
   }
  
   init(); 
+
+  document.addEventListener('DOMContentLoaded', init, false );
 })();
