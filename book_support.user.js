@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name    book support
 // @namespace http://looxu.blogspot.com/
-// @include http://www.amazon.co.jp/*dp*
+// @include http://www.amazon.co.jp/*
 // @author  Arc Cosine
-// @version 1.3
+// @version 1.4
 // @LICENSE Public Domain
 // ==/UserScript==
 (function(){
@@ -25,6 +25,7 @@
       "url" : "https://twitter.com/search?q={ASIN}",
       "favicon" : "https://twitter.com/favicon.ico" 
     },
+    // Move kinokuniya
     "Kinoppy" : {
       "url" : "http://www.kinokuniya.co.jp/disp/CSfDispListPage_001.jsp?qs=true&ptk=03&q={ASIN}",
       "favicon" : "http://www.kinokuniya.co.jp/favicon.ico",
@@ -47,31 +48,38 @@
     }
   };
 
+  function init(){
 
-var asin = document.getElementById("ASIN").value,
-    target = document.getElementById("btAsinTitle"),
-    div = document.createElement("div");
-
-var key = "", one = null, img = null, link = null;
-
-for( key in bookLogList ){
-  one = bookLogList[key];
-
-  link = div.appendChild(document.createElement("a"));
-  link.href = one.url.replace(/{ASIN}/,asin);
-  link.style.margin = "0px 16px 0px 0px";
-  link.alt = "Go to booklog page";
-
-  img = link.appendChild(document.createElement("img"));
-  img.src = one.favicon;
-  img.style.width = "16px";
-  img.style.height= "16px";
-
-  if( typeof one.option !== "undefined" && typeof one.option === "function" ){
-    one.option(one,link);
+    var target = document.getElementById("btAsinTitle");
+    
+    if( target ){
+    
+      var asin = document.getElementById("ASIN").value,
+          div = document.createElement("div"),
+          key = "", one = null, img = null, link = null;
+      
+      for( key in bookLogList ){
+        one = bookLogList[key];
+      
+        link = div.appendChild(document.createElement("a"));
+        link.href = one.url.replace(/{ASIN}/,asin);
+        link.style.margin = "0px 16px 0px 0px";
+        link.alt = "Go to page";
+      
+        img = link.appendChild(document.createElement("img"));
+        img.src = one.favicon;
+        img.style.width = "16px";
+        img.style.height= "16px";
+      
+        // option code.
+        if( typeof one.option !== "undefined" && typeof one.option === "function" ){
+          one.option(one,link);
+        }
+      
+      }
+      target.parentNode.insertBefore(div, target);
+    }
   }
-
-}
-target.parentNode.insertBefore(div, target);
-
+ 
+  init(); 
 })();
