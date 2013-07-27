@@ -3,7 +3,7 @@
 // @namespace http://looxu.blogspot.com/
 // @include http://www.amazon.co.jp/*
 // @author  Arc Cosine
-// @version 1.5
+// @version 1.6
 // @LICENSE Public Domain
 // ==/UserScript==
 (function(){
@@ -55,8 +55,16 @@
     if( target ){
     
       var asin = document.getElementById("ASIN").value,
-          div = document.createElement("div"),
-          key = "", one = null, img = null, link = null;
+          key = "", one = null, img = null, link = null, div = null;
+
+      var div = document.getElementById("book-support-div");
+      if( !div ){
+        div = document.createElement("div");
+        div.id = "book-support-div";
+      }else{
+        // ForFirefox
+        return;
+      }
       
       for( key in bookLogList ){
         one = bookLogList[key];
